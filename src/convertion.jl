@@ -6,7 +6,7 @@ end
 
 
 function convertion(map::String,ct::Int64,ci::Int64,cd::Int64)
-    deb::Int64 = 5
+    deb::UInt8 = 5
     open(map,"r") do io
         f::Vector{String} = readlines(io)
         
