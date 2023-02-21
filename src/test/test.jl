@@ -17,7 +17,7 @@ function convertion(map::String,ct::Int64,ci::Int64,cd::Int64)
         
         M::Matrix{Path} = Matrix{Path}(undef,height,widht)
         
-        for i = deb:height
+        @simd for i = deb:height
             
             for j = 1:widht
                 c::Char = f[i][j]
