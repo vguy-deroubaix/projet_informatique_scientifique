@@ -5,20 +5,17 @@ struct Path
 end
 
 
-
-
 function convertion(map::String,ct::Int64,ci::Int64,cd::Int64)
     deb::Int16 = 5
     open(map,"r") do io
         f::Vector{String} = readlines(io)
         
-        height::UInt16= parse(UInt32,split(f[2]," ")[2]) 
-        widht::UInt16 = parse(UInt32,split(f[3], " ")[2])
+        height::UInt16= parse(UInt16,split(f[2]," ")[2]) 
+        widht::UInt16 = parse(UInt16,split(f[3], " ")[2])
         
         M::Matrix{Path} = Matrix{Path}(undef,height,widht)
         
         @simd for i = deb:height
-            
             for j = 1:widht
                 c::Char = f[i][j]
                 if c == '.' || c == 'G' #terrain traversable
