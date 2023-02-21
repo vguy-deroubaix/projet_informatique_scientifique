@@ -1,19 +1,19 @@
 
 struct Path
     type::Char
-    cost::Int64
+    cost::Int16
 end
 
 
 
 
 function convertion(map::String,ct::Int64,ci::Int64,cd::Int64)
-    deb::Int64 = 5
+    deb::Int16 = 5
     open(map,"r") do io
         f::Vector{String} = readlines(io)
         
-        height::Int64 = parse(Int64,split(f[2]," ")[2]) 
-        widht::Int64 = parse(Int64,split(f[3], " ")[2])
+        height::UInt16= parse(UInt32,split(f[2]," ")[2]) 
+        widht::UInt16 = parse(UInt32,split(f[3], " ")[2])
         
         M::Matrix{Path} = Matrix{Path}(undef,height,widht)
         
@@ -35,6 +35,7 @@ function convertion(map::String,ct::Int64,ci::Int64,cd::Int64)
             #    println(M[i,:])
             #end
         end
+        return M
     end
 end
 
@@ -43,7 +44,7 @@ end
 
 function main(map::String)
     
-    convertion(map,1,100,25)
+    return convertion(map,1,100,25)
     
 end
  
