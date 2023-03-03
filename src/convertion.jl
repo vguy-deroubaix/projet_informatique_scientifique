@@ -6,7 +6,7 @@ struct Path
 end
 
 
-function convertion(map::String,ct::Int64,ci::Int64,cd::Int64)
+function convertion(map::String,ct::Int64,cs::Int64,cw::Int64)
     open(map,"r") do io
         f::Vector{String} = readlines(io)
         
@@ -20,13 +20,15 @@ function convertion(map::String,ct::Int64,ci::Int64,cd::Int64)
             for j = 1:widht
                 c::Char = f[i+4][j]
                 if c == '.' || c == 'G' #terrain traversable
-                    @inbounds M[i,j] = Path(c,1,(i,j))
+                    @inbounds M[i,j] = Path(c,ct,(i,j))
                 elseif c == '@' || c == 'O' #terrain hord carte
-                    @inbounds M[i,j] = Path(c,100,(i,j))
+                    @inbounds M[i,j] = Path(c,typemax(Int64),(i,j))
                 elseif c == 'T' #terrain intrversable (arbre)
-                    @inbounds M[i,j] = Path(c,100,(i,j))
-                else #terrain difficile
-                    @inbounds M[i,j] = Path(c,25,(i,j))
+                    @inbounds M[i,j] = Path(c,typemax(Int64),(i,j))
+                elseif c == 'S'
+                    @inbounds M[i,j] = Path(c,cs,(i,j))
+                else 
+                    @inbounds M[i,j] = Path(c,cw,(i,j))
                 end   
             end
         end
@@ -37,7 +39,7 @@ end
 
 function convert(map::String)
     
-    return convertion(map,1,100,25)
+    return convertion(map,1,5,8)
     
 end
  
