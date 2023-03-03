@@ -35,7 +35,7 @@ function convertion(map::String,ct::Int64,ci::Int64,cd::Int64)
 end
 
 
-function mainConv(map::String)
+function convert(map::String)
     
     return convertion(map,1,100,25)
     
