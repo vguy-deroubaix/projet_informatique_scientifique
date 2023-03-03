@@ -2,7 +2,6 @@
 struct Path
     type::Char
     cost::UInt16
-    coord::Tuple{UInt16,UInt16}
 end
 
 
@@ -20,15 +19,15 @@ function convertion(map::String,ct::Int64,cs::Int64,cw::Int64)
             for j = 1:widht
                 c::Char = f[i+4][j]
                 if c == '.' || c == 'G' #terrain traversable
-                    @inbounds M[i,j] = Path(c,ct,(i,j))
+                    @inbounds M[i,j] = Path(c,ct)
                 elseif c == '@' || c == 'O' #terrain hord carte
-                    @inbounds M[i,j] = Path(c,typemax(Int64),(i,j))
+                    @inbounds M[i,j] = Path(c,typemax(Int64))
                 elseif c == 'T' #terrain intrversable (arbre)
-                    @inbounds M[i,j] = Path(c,typemax(Int64),(i,j))
+                    @inbounds M[i,j] = Path(c,typemax(Int64))
                 elseif c == 'S'
-                    @inbounds M[i,j] = Path(c,cs,(i,j))
+                    @inbounds M[i,j] = Path(c,cs)
                 else 
-                    @inbounds M[i,j] = Path(c,cw,(i,j))
+                    @inbounds M[i,j] = Path(c,cw,)
                 end   
             end
         end

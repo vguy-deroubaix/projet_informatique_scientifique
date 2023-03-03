@@ -1,9 +1,5 @@
-
-struc Path 
-    type::Char
-    cost::UInt16
-    coor::Tuple{UInt16,UInt16}
-end
+include("../convertion.jl")
+include("../affichage/affMatrix.jl")
 
 struc Step
     origine::Path
