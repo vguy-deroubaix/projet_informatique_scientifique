@@ -4,14 +4,15 @@ include("../convertion.jl")
 include("../Dijkstra_algorithm/dijkstra.jl")
 
 const Rgb::Dict{Char,RGB{Float64}} = Dict{Char,RGB{Float64}}(
-    '.' => RGB{Float64}(1.0,1.0,1.0),
-    'G' => RGB{Float64}(0.149, 0.950, 0.0760),
-    'T' => RGB{Float64}(0.0570, 0.570, 0.254),
-    'O' => RGB{Float64}(0.404, 0.430, 0.414),
-    '@' => RGB{Float64}(0.404, 0.430, 0.414),
-    'S' => RGB{Float64}(0.730, 0.361, 0.131),
-    'W' => RGB{Float64}(0.0940, 0.235, 0.940),
-    'X' => RGB{Float64}(0.0,0.0,0.0)
+    '.' => RGB{Float64}(1.0,1.0,1.0), #white
+    'G' => RGB{Float64}(0.149, 0.950, 0.0760), 
+    'T' => RGB{Float64}(0.0570, 0.570, 0.254), #darck green
+    'O' => RGB{Float64}(0.404, 0.430, 0.414), #grey
+    '@' => RGB{Float64}(0.404, 0.430, 0.414), #grey
+    'S' => RGB{Float64}(0.730, 0.361, 0.131), #brown
+    'W' => RGB{Float64}(0.0940, 0.235, 0.940), #blue
+    'X' => RGB{Float64}(0.0,0.0,0.0), #black
+    'Q' => RGB{Float64}(0.770, 0.759, 0.100) #yellow
     )
 
 function convColor(map::String)
@@ -56,10 +57,12 @@ function affichageChemin(carte::Matrix{RGB{Float64}})
     Gtk.showall(gui["window"])
 end
 
-function pathLaing!(carte::Matrix{RGB{Float64}},path::Vector{Tuple{Int64,Int64}})
-    for i in eachindex(path)
-        carte[path[i][1],path[i][2]] = get(Rgb,'X',3)
-        #println((path[i].coor[1],path[i].coor[2]))
+function pathLaing!(carte::Matrix{RGB{Float64}},duo::Tuple{Vector{Tuple{Int64,Int64}},Vector{Tuple{Int64,Int64}}})
+    for i in eachindex(duo[2])
+        carte[duo[2][i][1],duo[2][i][2]] = get(Rgb,'Q',3)
+    end
+    for i in eachindex(duo[1])
+        carte[duo[1][i][1],duo[1][i][2]] = get(Rgb,'X',3)
     end 
     return carte
 end
