@@ -4,7 +4,12 @@ include("../convertion.jl")
 
 # changer le paramètre origines par des tableaux de step qui seront les chemins sinon c'est la galères 
 
-function pathFinding(map::Matrix{Path},S::Tuple{Int64,Int64},A::Tuple{Int64,Int64})
+function heuristique(point::Tuple{Int64,Int64},A::Tuple{Int64,Int64})
+
+    return abs(A[1]-point[1])+abs(A[2]-point[2])
+end
+
+function pathFindingAStar(map::Matrix{Path},S::Tuple{Int64,Int64},A::Tuple{Int64,Int64})
     if !(traversable(map[S[1],S[2]].type) && traversable(map[A[1],A[2]].type))
         println("le départ ou l'arrivé sont dans une zone innacesssible")
         return []
@@ -32,8 +37,8 @@ function pathFinding(map::Matrix{Path},S::Tuple{Int64,Int64},A::Tuple{Int64,Int6
             if !(visited[u[1],u[2]][1]) && !(visited[u[1],u[2]][2]) #si non visiter et non dequeue alors
                 #si la case est traversable alors on l'ajoute a la Priority Queue
                 if traversable(map[u[1],u[2]].type)
-                    cost = map[u[1],u[2]].cost + dist[point[1],point[2]]
-                    #println("insertion dans P ",point, " => ", u," : ",cost)
+                    cost = map[u[1],u[2]].cost + dist[point[1],point[2]] + heuristique(u,A)
+                   #println("insertion dans P ",point, " => ", u," : ",cost)
 
                     dist[u[1],u[2]] = cost
                     prev[u[1],u[2]] = point
@@ -44,12 +49,12 @@ function pathFinding(map::Matrix{Path},S::Tuple{Int64,Int64},A::Tuple{Int64,Int6
                 end
             elseif (visited[u[1],u[2]][1]) && !(visited[u[1],u[2]][2]) #si visiter et non dequeue 
 
-                cost = map[u[1],u[2]].cost + dist[u[1],u[2]]
+                cost = map[u[1],u[2]].cost + dist[u[1],u[2]] + heuristique(u,A)
                 #println("coute de la case ",u," : ",map[u[1],u[2]].cost)
                 #println("distance parcourus de ", u," : ",dist[u[1],u[2]])
                 #sinon elle est traversable car on l'a deja teste et on maj la distance si besoin
                 if cost < dist[u[1],u[2]]
-                    println("revision dans P ",point, " => ", u," : ",cost)
+                    #println("revision dans P ",point, " => ", u," : ",cost)
 
                     dist[u[1],u[2]] = cost
                     prev[u[1],u[2]] = point
@@ -60,7 +65,7 @@ function pathFinding(map::Matrix{Path},S::Tuple{Int64,Int64},A::Tuple{Int64,Int6
             end
         end
         #println("a la coor : ",point," avant dequeue")
-        t = peek(P)[2]
+        #t = peek(P)[2]
         #println("distance de point : ", dist[point[1],point[2]])
         point = dequeue!(P)
         #println("dist apres dequeue : ",dist[point[1],point[2]])
