@@ -5,8 +5,8 @@ struct Path
 end
 
 
-function convertion(map::String,ct::Int64,cs::Int64,cw::Int64)
-    open(map,"r") do io
+function convertion(fname::String,ct::Int64,cs::Int64,cw::Int64)
+    open(fname,"r") do io
         f::Vector{String} = readlines(io)
         
         height::Int64 = parse(Int64,split(f[2]," ")[2]) 
@@ -35,22 +35,8 @@ function convertion(map::String,ct::Int64,cs::Int64,cw::Int64)
 end
 
 
-function convert(map::String)
+function fileToMatrix(fname::String)
     
-    return convertion(map,1,5,8)
+    return convertion(fname,1,5,8)
     
-end
- 
-function toTxt(prev::Matrix{Tuple{Int64,Int64}})
-
-
-    M::Matrix{String} = fill("",size(prev,1),size(prev,2))
-    for i in 1:size(prev,1), j in 1:size(prev,2)
-        ind1::Int64 = prev[i,j][1]
-        ind2::Int64 = prev[i,j][2]
-        M[i,j] = "(" * string(ind1) * "," * string(ind2) * ")"
-    end
-
-    return M
-
 end

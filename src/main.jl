@@ -3,21 +3,45 @@ include("Dijkstra_algorithm/dijkstra.jl")
 include("A*_algorithm/A*_algorithm.jl")
 include("affichage/affMatrix.jl")
 
-S::Tuple{Int64,Int64} = (10,10) #(10,223)
-A::Tuple{Int64,Int64} = (508,505) #(435,155)
 
-function Dijk(map::String)
-    affichageChemin(pathLaing!(convColor(map),pathFinding(convert(map),S,A))) #(80,126),(115,90)))))
+function algoDijkstra(fname::String,D::Tuple{Int64,Int64},A::Tuple{Int64,Int64})
+    shortestPath::Vector{Tuple{Int64,Int64}} = []
+    visitedBox::Vector{Tuple{Int64,Int64}} = []
+    nombreEtatvisite::Int64 = 0
+    pathCost::Int64 = 0
+    (shortestPath,visitedBox,nombreEtatvisite,pathCost) = pathFindingDijkstra(fileToMatrix(fname),D,A)
+    println("la distance de D -> A : ", pathCost)
+    println("nombre de case visité : ", size(visitedBox,1))
 end
 
-function AStar(map::String)
-    affichageChemin(pathLaing!(convColor(map),pathFindingAStar(convert(map),S,A)))
+function algoAstar(fname::String,D::Tuple{Int64,Int64},A::Tuple{Int64,Int64})
+    shortestPath::Vector{Tuple{Int64,Int64}} = []
+    visitedBox::Vector{Tuple{Int64,Int64}} = []
+    nombreEtatvisite::Int64 = 0
+    pathCost::Int64 = 0
+    (shortestPath,visitedBox,nombreEtatvisite,pathCost) = pathFindingAstar(fileToMatrix(fname),D,A)
+    println("la distance de D -> A : ", pathCost)
+    println("nombre de case visité : ", size(visitedBox,1))
 end
 
-function testDijk(map::String)
-    pathFinding(convert(map),S,A)
+function DijkstraAffichage(fname::String,D::Tuple{Int64,Int64},A::Tuple{Int64,Int64})
+    shortestPath::Vector{Tuple{Int64,Int64}} = []
+    visitedBox::Vector{Tuple{Int64,Int64}} = []
+    nombreEtatvisite::Int64 = 0
+    pathCost::Int64 = 0
+    (shortestPath,visitedBox,nombreEtatvisite,pathCost) = pathFindingDijkstra(fileToMatrix(fname),D,A)
+    affichageChemin(pathLaing!(convColor(fname),shortestPath,visitedBox))
+    println("la distance de D -> A : ", pathCost)
+    println("nombre de case visité : ", size(visitedBox,1))
 end
 
-function testAStar(map::String)
-    pathFindingAStar(convert(map),S,A)
+function AStarAffichage(fname::String,D::Tuple{Int64,Int64},A::Tuple{Int64,Int64})
+    shortestPath::Vector{Tuple{Int64,Int64}} = []
+    visitedBox::Vector{Tuple{Int64,Int64}} = []
+    nombreEtatvisite::Int64 = 0
+    pathCost::Int64 = 0
+    (shortestPath,visitedBox,nombreEtatvisite,pathCost) = pathFindingAstar(fileToMatrix(fname),D,A)
+    affichageChemin(pathLaing!(convColor(fname),shortestPath,visitedBox))
+    println("la distance de D -> A : ", pathCost)
+    println("nombre de case visité : ", size(visitedBox,1))
 end

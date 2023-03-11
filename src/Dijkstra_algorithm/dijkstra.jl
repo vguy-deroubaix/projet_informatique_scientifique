@@ -4,45 +4,47 @@ include("../convertion.jl")
 
 # changer le paramètre origines par des tableaux de step qui seront les chemins sinon c'est la galères 
 
-function pathFinding(map::Matrix{Path},S::Tuple{Int64,Int64},A::Tuple{Int64,Int64})
-    #println(S, " : ", map[S[1],S[2]].type)
-    #println(A, " : ", map[A[1],A[2]].type)
-    if !(traversable(map[S[1],S[2]].type) && traversable(map[A[1],A[2]].type))
-        r::Vector{Tuple{Int64,Int64}} = [] #vector rien
+function pathFindingDijkstra(map::Matrix{Path},D::Tuple{Int64,Int64},A::Tuple{Int64,Int64})
+    
+    if !(traversable(map[D[1],D[2]].type) && traversable(map[A[1],A[2]].type))
+        println(D, " : ", map[D[1],D[2]].type)
+        println(A, " : ", map[A[1],A[2]].type)
+        r::Vector{Tuple{Int64,Int64}} = [] #vector vide
         println("le départ ou l'arrivé sont dans une zone innacesssible")
-        return (r,r)
+        return (r,r,0,0)
     end
 
     visited::Matrix{Tuple{Bool,Bool}} = fill((false,false),size(map,1),size(map,2)) #non visiter et non ferme
     prev::Matrix{Tuple{Int64,Int64}} = fill((0,0),size(map,1),size(map,2)) # matrice des précédent chaque case contient le pas précédent
+    dist::Matrix{Int64} = fill(typemax(Int64)-10_000_000,size(map,1),size(map,2)) #matrice des distance chaque case est associer a la distance trouvé , typemax a changé
+
     P::PriorityQueue = PriorityQueue{Tuple{Int64,Int64},Int64}(Base.Order.Forward)  
-    dist::Matrix{Int64} = fill(typemax(Int64)-10000000,size(map,1),size(map,2)) #matrice des distance chaque case est associer a la distance trouvé
     next::Vector{Tuple{Int64,Int64}} = [] #le vector des cases acessible depuis la case sur laquelle on est
-    Q::Vector{Tuple{Int64,Int64}} = []
+    Q::Vector{Tuple{Int64,Int64}} = [] #vector dans lesquelles on stoke les états visités pour l'affichage 
+
     cost::Int64 = 0
-    totalcost::Int64 = 0
-    visited[S[1],S[2]] = (true,true) #la source est considérer visité et n'est pas mis dans la PriorityQueue
-    dist[S[1],S[2]] = 0 #la distance de la source est 0 quand on est sur la source
-    j::Int64 = 1
-    point::Tuple{Int64,Int64} = S
+    pathCost::Int64 = 0
+    visited[D[1],D[2]] = (true,true) #la source est considérer visité et n'est pas mis dans la PriorityQueue
+    dist[D[1],D[2]] = 0 #la distance de la source est 0 quand on est sur la source
+    numbreBoxVisited::Int64 = 1
+    point::Tuple{Int64,Int64} = D
 
     while !(point == A)  
         next = getNext(map,point) #vector des voisins accessible depuis le point sur le quel on est
         for i in eachindex(next)
-            u = next[i]
-            #println("revision ? : " ,u != point && (visited[u[1],u[2]][1]) && !(visited[u[1],u[2]][2]))
+            u = next[i] #le voisin que l'on va traité
             if !(visited[u[1],u[2]][1]) && !(visited[u[1],u[2]][2]) && traversable(map[u[1],u[2]].type) #si non visiter et non ferme et traversable alors
-                #si la case est traversable alors on l'ajoute a la Priority Queue
                 cost = map[u[1],u[2]].cost + dist[point[1],point[2]]
+                #si la case est traversable alors on l'ajoute a la Priority Queue
                 dist[u[1],u[2]] = cost
                 prev[u[1],u[2]] = point
                 visited[u[1],u[2]] = (true,visited[u[1],u[2]][2])
                 enqueue!(P,u,cost)
                 push!(Q,u)
-                j = j + 1
-            elseif (visited[u[1],u[2]][1]) && !(visited[u[1],u[2]][2]) #si visiter et non dequeue 
-                cost = map[u[1],u[2]].cost + dist[u[1],u[2]]
-                #sinon elle est traversable car on l'a deja teste et on maj la distance si besoin
+                numbreBoxVisited = numbreBoxVisited + 1
+            elseif (visited[u[1],u[2]][1]) && !(visited[u[1],u[2]][2]) #si visiter et non ferme 
+                cost = map[u[1],u[2]].cost +dist[point[1],point[2]] 
+                #sinon elle est traversable car on l'a deja teste et on mets a jour la distance si besoin
                 if cost < dist[u[1],u[2]]
                     dist[u[1],u[2]] = cost
                     prev[u[1],u[2]] = point
@@ -50,27 +52,25 @@ function pathFinding(map::Matrix{Path},S::Tuple{Int64,Int64},A::Tuple{Int64,Int6
                 end
             end
         end
-        (point,totalcost) = dequeue_pair!(P)
+        (point,pathCost) = dequeue_pair!(P)
         visited[point[1],point[2]] = (visited[point[1],point[2]][1],true) 
     end
-    println(j)
-    println(totalcost)
-    return (vectorWay(S,point,prev),Q)
+    return (vectorWay(D,point,prev),Q,numbreBoxVisited,pathCost)
 end
 
-function vectorWay(S::Tuple{Int64,Int64},point::Tuple{Int64,Int64},prev::Matrix{Tuple{Int64,Int64}})
+function vectorWay(D::Tuple{Int64,Int64},point::Tuple{Int64,Int64},prev::Matrix{Tuple{Int64,Int64}})
 
-    shortes::Vector{Tuple{Int64,Int64}} = []
-    while point != S
-        push!(shortes,point)
+    shortest::Vector{Tuple{Int64,Int64}} = []
+    while point != D
+        push!(shortest,point)
         point = prev[point[1],point[2]] 
     end
-    push!(shortes,S)
-    return shortes
+    push!(shortest,D)
+    return shortest
 end
 
 function traversable(c::Char) 
-    return (c == '.') || (c == 'G') || (c == 'S') || (c == 'W')
+    return (c == '.') || (c == 'G') || (c == 'D') || (c == 'W') || (c == 'S')
 end
 
 function between(a::Int64,n::Int64,b::Int64)
