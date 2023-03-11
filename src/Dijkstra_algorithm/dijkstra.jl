@@ -26,7 +26,7 @@ function pathFindingDijkstra(map::Matrix{Path},D::Tuple{Int64,Int64},A::Tuple{In
     pathCost::Int64 = 0
     visited[D[1],D[2]] = (true,true) #la source est considérer visité et n'est pas mis dans la PriorityQueue
     dist[D[1],D[2]] = 0 #la distance de la source est 0 quand on est sur la source
-    numbreBoxVisited::Int64 = 1
+    numbreBoxVisited::Int64 = 0
     point::Tuple{Int64,Int64} = D
 
     while !(point == A)  

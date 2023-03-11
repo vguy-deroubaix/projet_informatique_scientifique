@@ -28,7 +28,7 @@ function pathFindingAstar(map::Matrix{Path},D::Tuple{Int64,Int64},A::Tuple{Int64
     pathCost::Int64 = 0
     visited[D[1],D[2]] = (true,true) #la source est considérer visité et n'est pas mis dans la PriorityQueue
     dist[D[1],D[2]] = 0 #la distance de la source est 0 quand on est sur la source
-    numberBoxVisited::Int64 = 1
+    numberBoxVisited::Int64 = 0
     point::Tuple{Int64,Int64} = D
 
     while !(point == A)  
