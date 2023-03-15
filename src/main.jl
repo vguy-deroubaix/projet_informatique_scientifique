@@ -1,7 +1,7 @@
 include("convertion.jl")
-include("Dijkstra_algorithm/dijkstra.jl")
-include("A*_algorithm/A*_algorithm.jl")
-include("affichage/affMatrix.jl")
+include("dijkstra.jl")
+include("A*_algorithm.jl")
+include("affMatrix.jl")
 
 
 function algoDijkstra(fname::String,D::Tuple{Int64,Int64},A::Tuple{Int64,Int64})

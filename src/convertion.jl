@@ -6,7 +6,7 @@ end
 
 
 function convertion(fname::String,ct::Int64,cs::Int64,cw::Int64)
-    open(fname,"r") do io
+    open("../data/"*fname,"r") do io
         f::Vector{String} = readlines(io)
         
         height::Int64 = parse(Int64,split(f[2]," ")[2]) 
@@ -25,7 +25,7 @@ function convertion(fname::String,ct::Int64,cs::Int64,cw::Int64)
                     @inbounds M[i,j] = Path(c,typemax(Int64))
                 elseif c == 'S'
                     @inbounds M[i,j] = Path(c,cs)
-                else  #c == 'W'
+                else  #pour c == 'W'
                     @inbounds M[i,j] = Path(c,cw)
                 end   
             end
