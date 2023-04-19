@@ -19,9 +19,31 @@ function dataJAnalyse(donne::Vector{Tuple{Float64,Float64}})
 
 end
 
+
+function dataJAnalyse2(donne::Vector{Tuple{Float64,Float64}},avgTime::Float64)
+
+    compteurOpti::Float64 = 0.0
+    compteurTemps::Float64 = 0.0
+
+    for i = 1:size(donne,1)
+        compteurOpti = compteurOpti + donne[i][1]
+        compteurTemps = compteurTemps + donne[i][2]
+    end
+    return (compteurOpti/size(donne,1),(compteurTemps/size(donne,1))/couple)
+
+
+end
+
+
 function reajustement(size::Int64)
 
     return floor(Int64,convert(Float64,size)*0.95)
+
+end
+
+function reajustementFile(size::Int64)
+
+    return floor(Int64,convert(Float64,size)*0.94)
 
 end
 
@@ -52,8 +74,9 @@ function testEnSerie(dname::String,w::Float64)
             pathCostW::Float64 = 0
 
             cpt::Int64 = 0
+            times::Vector{Float64} = []
             
-            for i = 2:(size(f,1)-reajustement(size(f,1)))
+            for i = 2:(size(f,1)-reajustementFile(size(f,1)))
                 line = split(f[i])
                 D = ((parse(Int64,line[5]),parse(Int64,line[6])))
                 A = ((parse(Int64,line[7]),parse(Int64,line[8])))
@@ -68,10 +91,9 @@ function testEnSerie(dname::String,w::Float64)
                 end 
             end
             push!(donne,dataJAnalyse(dataJ))
-            #println("analyse local : ", dataJAnalyse(dataJ), " num ",iter, ", sous optimal : ", cpt)
+            #push!(times,timeA)
+            #push!(donne,dataJAnalyse2(dataJ,moyenne2(times)))
             dataJ = []
-            iter = iter +1
-
         end
     end
     return moyenne(donne)
@@ -86,12 +108,37 @@ function moyenne(donne::Vector{Tuple{Float64,Float64}})
     for i = 1:size(donne,1)
         compteurOpti = compteurOpti + donne[i][1]
         compteurTemps = compteurTemps + donne[i][2]
-
     end
     return (compteurOpti/size(donne,1),compteurTemps/size(donne,1))
+end
+
+function moyenne2(donne::Vector{Tuple{Float64,Float64}})
+
+    compteurTime::Float64 = 0.0
+
+    for i = 1:size(donne,1)
+        compteurTime = compteurTime +donne[i]
+    end
+    return compteurTime/size(donne,1)
 
 end
 
+function splitOT(donne::Tuple{Float64,Float64},OT::Bool)
+    if OT
+        return donne[1]
+    else
+        return donne[2]
+    end
+end
+
+function printCourbOpti(dname::String)
+
+    x = range(0,1,length=10)
+    y1 = splitOT.(testEnSerie.(dname*"-scen",x),true)
+    y2 = splitOT.(testEnSerie.(dname*"-scen",x),false)
+    #plot(x,y2)
+    plot(x,[y1,y2])
+end
 
 
 function testStandar()
@@ -114,23 +161,23 @@ function testStandar()
 
 end 
 
-function testStandarRoom()
+function testStandarU(dname::String)
 
     w::Vector{Float64} = [0.1,0.3,0.5,0.7,0.9]
     donne::Vector{Tuple{Float64,Float64}} = []
     tmp::Tuple{Float64,Float64} = (0.0,0.0)
 
 
-    println("début de test pour : room-scen ---------------")
+    println("début de test pour : "*dname*"-scen ---------------")
     for i = 1:size(w,1)
-        tmp = testEnSerie("room-scen",w[i])
+        tmp = testEnSerie(dname*"-scen",w[i])
         pushfirst!(donne,tmp)
         println("pour w = ",w[i],", ",tmp)
     end
-    println("fin de test pour : room-scen")
+    println("fin de test pour : "*dname*"-scen")
 end 
 
-function testStandarMaze()
+function test()
 
     w::Vector{Float64} = [0.1,0.3,0.5,0.7,0.9]
     donne::Vector{Tuple{Float64,Float64}} = []
@@ -146,37 +193,6 @@ function testStandarMaze()
     println("fin de test pour : maze-scen")
 end 
 
-function testStandarRandom()
-
-    w::Vector{Float64} = [0.1,0.3,0.5,0.7,0.9]
-    donne::Vector{Tuple{Float64,Float64}} = []
-    tmp::Tuple{Float64,Float64} = (0.0,0.0)
-
-
-    println("début de test pour : random-scen ---------------")
-    for i = 1:size(w,1)
-        tmp = testEnSerie("random-scen",w[i])
-        pushfirst!(donne,tmp)
-        println("pour w = ",w[i],", ",tmp)
-    end
-    println("fin de test pour : random-scen")
-end 
-
-function testStandarStreet()
-
-    w::Vector{Float64} = [0.1,0.3,0.5,0.7,0.9]
-    donne::Vector{Tuple{Float64,Float64}} = []
-    tmp::Tuple{Float64,Float64} = (0.0,0.0)
-
-
-    println("début de test pour : street-scen ---------------")
-    for i = 1:size(w,1)
-        tmp = testEnSerie("street-scen",w[i])
-        pushfirst!(donne,tmp)
-        println("pour w = ",w[i],", ",tmp)
-    end
-    println("fin de test pour : street-scen")
-end 
 
 
 function slitpOTV(donne::Vector{Tuple{Float64,Float64}},OT::Bool)
@@ -198,30 +214,3 @@ function slitpOTV(donne::Vector{Tuple{Float64,Float64}},OT::Bool)
 end 
 
 
-function splitOT(donne::Tuple{Float64,Float64},OT::Bool)
-    if OT
-        return donne[1]
-    else
-        return donne[2]
-    end
-end
-
-function printCourbOpti()
-
-    dname::String = "maze"
-
-    x = range(0,1,length=10)
-    y1 = splitOT.(testEnSerie.(dname*"-scen",x),true)
-    y2 = splitOT.(testEnSerie.(dname*"-scen",x),false)
-    #=y2 = testEnSerie.("maze-scen",x)
-    y3 = testEnSerie.("random-scen",x)
-    y4 = testEnSerie.("street-scen",x)=#
-
-
-    plot(x,[y1,y2])
-    #for i = 1:size(donne,1)
-    #    plot(donne[i][1],w)
-    #end
-
-
-end
