@@ -52,6 +52,9 @@ function pathFindingDijkstra(map::Matrix{Path},D::Tuple{Int64,Int64},A::Tuple{In
                 end
             end
         end
+        if isempty(P) 
+            return ([],[],0,0.0)
+        end
         (point,pathCost) = dequeue_pair!(P)
         visited[point[1],point[2]] = (visited[point[1],point[2]][1],true) 
     end

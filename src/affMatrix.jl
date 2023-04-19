@@ -27,9 +27,6 @@ function convColor(fname::String)
     for i in 1:height
         for j in 1:witdh
             rgbMap[i,j] = get(boxToRGB,M[i,j].type,3) 
-            if mod(i,1000) == 0 
-                println(rgbMap[i,j])
-            end
         end
     end
     return rgbMap

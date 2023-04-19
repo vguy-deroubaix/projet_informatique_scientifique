@@ -10,10 +10,7 @@ end
 
 function pathFindingAstar(map::Matrix{Path},D::Tuple{Int64,Int64},A::Tuple{Int64,Int64})
     if !(traversable(map[D[1],D[2]].type) && traversable(map[A[1],A[2]].type))
-        println(D, " : ", map[D[1],D[2]].type)
-        println(A, " : ", map[A[1],A[2]].type)
-        println("le départ ou l'arrivé sont dans une zone innacesssible")
-        return ([],[])
+        return ([],[],0,0)
     end
 
     visited::Matrix{Tuple{Bool,Bool}} = fill((false,false),size(map,1),size(map,2)) #non visiter et non dequeue
@@ -38,16 +35,14 @@ function pathFindingAstar(map::Matrix{Path},D::Tuple{Int64,Int64},A::Tuple{Int64
             localCost = map[u[1],u[2]].cost + dist[point[1],point[2]] #+ heuristique(u,A)
             if !(visited[u[1],u[2]][1]) && !(visited[u[1],u[2]][2]) && traversable(map[u[1],u[2]].type) #si non visiter et non ferme alors
                 #si la case est traversable alors on l'ajoute a la Priority Queue
-
                     dist[u[1],u[2]] = localCost 
                     prev[u[1],u[2]] = point
                     visited[u[1],u[2]] = (true,visited[u[1],u[2]][2])
-                    enqueue!(P,u,dist[u[1],u[2]]+ heuristique(u,A))
+                    enqueue!(P,u,dist[u[1],u[2]] + heuristique(u,A))
                     push!(Q,u)
                     numberBoxVisited = numberBoxVisited + 1
             elseif (visited[u[1],u[2]][1]) && !(visited[u[1],u[2]][2]) #si visiter et non ferme 
 
-                #print("verif 2")
                 #sinon elle est traversable car on l'a deja teste et on maj la distance si besoin
                 if localCost < dist[u[1],u[2]]
                     dist[u[1],u[2]] = localCost
@@ -56,11 +51,17 @@ function pathFindingAstar(map::Matrix{Path},D::Tuple{Int64,Int64},A::Tuple{Int64
                 end
             end
         end
+        if isempty(P) 
+            return ([],[],0,0.0)
+        end
         (point,pathCost) = dequeue_pair!(P)
         visited[point[1],point[2]] = (visited[point[1],point[2]][1],true)         
     end
     return (vectorWay(D,point,prev),Q,numberBoxVisited,pathCost)
 end
+
+
+#inline function -------------------------------------------------------------------------------------------------------------
 
 function vectorWay(D::Tuple{Int64,Int64},point::Tuple{Int64,Int64},prev::Matrix{Tuple{Int64,Int64}})
 
