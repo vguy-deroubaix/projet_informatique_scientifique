@@ -29,7 +29,7 @@ function dataJAnalyse2(donne::Vector{Tuple{Float64,Float64}},avgTime::Float64)
         compteurOpti = compteurOpti + donne[i][1]
         compteurTemps = compteurTemps + donne[i][2]
     end
-    return (compteurOpti/size(donne,1),(compteurTemps/size(donne,1))/couple)
+    return (compteurOpti/size(donne,1),(compteurTemps/size(donne,1))/avgTime)
 
 
 end
@@ -37,13 +37,13 @@ end
 
 function reajustement(size::Int64)
 
-    return floor(Int64,convert(Float64,size)*0.95)
+    return floor(Int64,convert(Float64,size)*0.9)
 
 end
 
 function reajustementFile(size::Int64)
 
-    return floor(Int64,convert(Float64,size)*0.94)
+    return floor(Int64,convert(Float64,size)*0.85)
 
 end
 
@@ -82,7 +82,7 @@ function testEnSerie(dname::String,w::Float64)
                 A = ((parse(Int64,line[7]),parse(Int64,line[8])))
 
                 #println("ligne ",i," : ",D,A, " dossier :",dir[j], ", file : ", fname)
-                if !(D[1] == 0 || D[2] == 0 || A[1] == 0 || A[2] == 0) 
+                if !(D[1] == 0 || D[2] == 0 || A[1] == 0 || A[2] == 0) && !()
                     timeA = @elapsed (shortestPath,visitedBox,nombreEtatvisite,pathCost) = pathFindingAstar(fileToMatrix(line[2]),D,A)
                     timeWA = @elapsed (shortestPathW,visitedBoxW,nombreEtatvisiteW,pathCostW) = pathFindingWAstar(fileToMatrix(line[2]),D,A,w)
                     if pathCost > 0 
@@ -112,7 +112,7 @@ function moyenne(donne::Vector{Tuple{Float64,Float64}})
     return (compteurOpti/size(donne,1),compteurTemps/size(donne,1))
 end
 
-function moyenne2(donne::Vector{Tuple{Float64,Float64}})
+function moyenne2(donne::Vector{Float64})
 
     compteurTime::Float64 = 0.0
 
